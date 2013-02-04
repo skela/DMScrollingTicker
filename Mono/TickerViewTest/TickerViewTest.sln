@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TickerViewTest", "TickerViewTest\TickerViewTest.csproj", "{94739995-1E5A-4619-AEEB-ECA5F70E2D6A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TickerView", "..\TickerView\TickerView.csproj", "{0C091988-2851-4456-A837-B5AD19EDE7C0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|iPhoneSimulator = Debug|iPhoneSimulator
+		Release|iPhoneSimulator = Release|iPhoneSimulator
+		Debug|iPhone = Debug|iPhone
+		Release|iPhone = Release|iPhone
+		Ad-Hoc|iPhone = Ad-Hoc|iPhone
+		AppStore|iPhone = AppStore|iPhone
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0C091988-2851-4456-A837-B5AD19EDE7C0}.Ad-Hoc|iPhone.ActiveCfg = Release|Any CPU
+		{0C091988-2851-4456-A837-B5AD19EDE7C0}.Ad-Hoc|iPhone.Build.0 = Release|Any CPU
+		{0C091988-2851-4456-A837-B5AD19EDE7C0}.AppStore|iPhone.ActiveCfg = Release|Any CPU
+		{0C091988-2851-4456-A837-B5AD19EDE7C0}.AppStore|iPhone.Build.0 = Release|Any CPU
+		{0C091988-2851-4456-A837-B5AD19EDE7C0}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{0C091988-2851-4456-A837-B5AD19EDE7C0}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{0C091988-2851-4456-A837-B5AD19EDE7C0}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{0C091988-2851-4456-A837-B5AD19EDE7C0}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{0C091988-2851-4456-A837-B5AD19EDE7C0}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{0C091988-2851-4456-A837-B5AD19EDE7C0}.Release|iPhone.Build.0 = Release|Any CPU
+		{0C091988-2851-4456-A837-B5AD19EDE7C0}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{0C091988-2851-4456-A837-B5AD19EDE7C0}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{94739995-1E5A-4619-AEEB-ECA5F70E2D6A}.Ad-Hoc|iPhone.ActiveCfg = Ad-Hoc|iPhone
+		{94739995-1E5A-4619-AEEB-ECA5F70E2D6A}.Ad-Hoc|iPhone.Build.0 = Ad-Hoc|iPhone
+		{94739995-1E5A-4619-AEEB-ECA5F70E2D6A}.AppStore|iPhone.ActiveCfg = AppStore|iPhone
+		{94739995-1E5A-4619-AEEB-ECA5F70E2D6A}.AppStore|iPhone.Build.0 = AppStore|iPhone
+		{94739995-1E5A-4619-AEEB-ECA5F70E2D6A}.Debug|iPhone.ActiveCfg = Debug|iPhone
+		{94739995-1E5A-4619-AEEB-ECA5F70E2D6A}.Debug|iPhone.Build.0 = Debug|iPhone
+		{94739995-1E5A-4619-AEEB-ECA5F70E2D6A}.Debug|iPhoneSimulator.ActiveCfg = Debug|iPhoneSimulator
+		{94739995-1E5A-4619-AEEB-ECA5F70E2D6A}.Debug|iPhoneSimulator.Build.0 = Debug|iPhoneSimulator
+		{94739995-1E5A-4619-AEEB-ECA5F70E2D6A}.Release|iPhone.ActiveCfg = Release|iPhone
+		{94739995-1E5A-4619-AEEB-ECA5F70E2D6A}.Release|iPhone.Build.0 = Release|iPhone
+		{94739995-1E5A-4619-AEEB-ECA5F70E2D6A}.Release|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
+		{94739995-1E5A-4619-AEEB-ECA5F70E2D6A}.Release|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = TickerViewTest\TickerViewTest.csproj
+	EndGlobalSection
+EndGlobal
