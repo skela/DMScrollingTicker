@@ -17,6 +17,7 @@ namespace Ticker.UI
 
 	public delegate void ScrollingTickerAnimationCompletition(uint loopsDone,bool isFinished);
 	public delegate UIView ScrollingTickerLazyLoadingHandler(uint indexOfViewToShow);
+	public delegate void ScrollingTickerTappedSubview(UIView subview);
 
 	public class TickerView : UIView
 	{
@@ -25,9 +26,6 @@ namespace Ticker.UI
 		private int numberOfLoops;          // number of loops to make (0 means it will go on forever)
 		private ScrollDirection scrollViewDirection;                // scroll direction of the ticker
 		private float scrollViewSpeed;         
-
-		private SizeF contentSize;            // Total size of the scrolling content subviews
-		private RectangleF visibleContentRect; 
 
 		private UIScrollView scrollView;
 		private List<NSObject> tickerSubViews;                     // preloaded subviews (if any)
@@ -38,6 +36,7 @@ namespace Ticker.UI
 		// Block handlers
 		ScrollingTickerLazyLoadingHandler         lazyLoadingHandler;
 		ScrollingTickerAnimationCompletition      animationCompletitionHandler;
+		ScrollingTickerTappedSubview tapHandler;
 
 		// Constants
 		float kLPScrollingTickerHSpace = 2.0f;
@@ -54,11 +53,25 @@ namespace Ticker.UI
 			scrollView = new UIScrollView(Bounds);
 			scrollView.ShowsHorizontalScrollIndicator = false;
 			scrollView.ShowsVerticalScrollIndicator = false;
-			scrollView.Delegate = new TickerViewScrollDelegate(this);
+			scrollView.ScrollEnabled = false;
 
 			AddSubview(scrollView);
 			BackgroundColor = UIColor.Clear;
 			scrollView.BackgroundColor = UIColor.Clear;
+		}
+
+		public override void MovedToSuperview()
+		{
+			base.MovedToSuperview();
+	
+			StartListeningForApplicationState();
+		}
+		
+		public override void RemoveFromSuperview()
+		{
+			base.RemoveFromSuperview();
+
+			StopListeningForApplicationState();
 		}
 
 		public void BeginAnimationWithViews (List<UIView> views, ScrollDirection direction=ScrollDirection.FromRight, float scrollSpeed=0.0f, int loops=0,ScrollingTickerAnimationCompletition completition=null)
@@ -113,6 +126,116 @@ namespace Ticker.UI
 			ResumeLayer(scrollView.Layer);
 		}
 
+		public void Clear()
+		{
+			EndAnimation(false);
+
+			foreach (UIView v in scrollView.Subviews)
+			{
+				if (!(v is UIImageView))
+				{
+					v.RemoveFromSuperview();
+				}
+			}
+		}
+
+		#region Tapping
+
+		public ScrollingTickerTappedSubview TapDelegate
+		{
+			set
+			{
+				tapHandler = value;
+				if (tapRecognizer==null)
+				{
+					tapRecognizer = new UITapGestureRecognizer();
+					tapRecognizer.AddTarget( () => TappedTickerView(tapRecognizer) );
+					AddGestureRecognizer(tapRecognizer);
+				}
+			}
+			get
+			{
+				return tapHandler;
+			}
+		}
+
+		UITapGestureRecognizer tapRecognizer;
+
+		RectangleF tempFrame;
+		public void TappedTickerView(UITapGestureRecognizer recog)
+		{
+			if (tapHandler==null)
+				return;
+
+			PointF point = recog.LocationInView(this);
+			point.X = point.X + VisibleContentRect.X;
+			UIView tappedView = null;
+			Console.WriteLine("point is " + point.ToString());
+			foreach (UIView v in scrollView.Subviews)
+			{
+				if (!(v is UIImageView))
+				{
+					Console.WriteLine("v with tag {0} and frame {1}",v.Tag,v.Frame.ToString());
+					tempFrame = v.Frame;
+					tempFrame.Height = Bounds.Height;
+					if (tempFrame.Contains(point))
+					{
+						tappedView = v;
+						break;
+					}
+				}
+			}
+
+			if (tapHandler!=null && tappedView!=null)
+				tapHandler(tappedView);
+		}
+
+		#endregion
+
+		#region Application State
+
+		bool wasAnimating;
+
+		public void ApplicationDidEnterBackground()
+		{
+			wasAnimating = isAnimating;
+			PauseAnimation();
+		}
+		
+		public void ApplicationWillEnterForeground()
+		{
+			if (wasAnimating)
+			{
+				BeginAnimation();
+				ResumeLayer(scrollView.Layer);
+			}
+		}
+		
+		private void ApplicationDidEnterBackground(NSNotification n)
+		{
+			ApplicationDidEnterBackground();
+		}
+		
+		private void ApplicationWillEnterForeground(NSNotification n)
+		{
+			ApplicationWillEnterForeground();	
+		}
+		
+		private void StopListeningForApplicationState()
+		{			
+			NSNotificationCenter.DefaultCenter.RemoveObserver(this,UIApplication.DidEnterBackgroundNotification,null);
+			NSNotificationCenter.DefaultCenter.RemoveObserver(this,UIApplication.WillEnterForegroundNotification,null);
+		}
+		
+		private void StartListeningForApplicationState()
+		{
+			StopListeningForApplicationState();
+			NSNotificationCenter.DefaultCenter.AddObserver(UIApplication.DidEnterBackgroundNotification,ApplicationDidEnterBackground);
+			NSNotificationCenter.DefaultCenter.AddObserver(UIApplication.WillEnterForegroundNotification,ApplicationWillEnterForeground);		
+		}
+
+		#endregion
+
 		#region Internal
 
 		PointF StartOffset 
@@ -138,7 +261,7 @@ namespace Ticker.UI
 
 			double animationDuration = (scrollView.ContentSize.Width/scrollViewSpeed);
 
-			UIView.Animate(animationDuration,0.0f,UIViewAnimationOptions.CurveLinear,
+			UIView.AnimateNotify(animationDuration,0.0f,UIViewAnimationOptions.CurveLinear|UIViewAnimationOptions.AllowUserInteraction,
 			delegate
 			{
 				PointF finalPoint = new PointF();
@@ -150,9 +273,8 @@ namespace Ticker.UI
 				
 				scrollView.ContentOffset = finalPoint;
 			},
-			delegate /*(bool finished)*/
+			delegate(bool finished)
 			{
-				bool finished = true;
 				if (finished) 
 				{
 					isAnimating = false;
@@ -322,17 +444,6 @@ namespace Ticker.UI
 		}
 
 		#endregion
-
-
-		public class TickerViewScrollDelegate : UIScrollViewDelegate
-		{
-			TickerView tickerView;
-
-			public TickerViewScrollDelegate(TickerView aTickerView)
-			{
-				tickerView = aTickerView;
-			}
-		}
 	}
 
 	public class TickerLabel : UIView
@@ -367,7 +478,21 @@ namespace Ticker.UI
 			LayoutSubviewsNow();
 		}
 
-		public String Description
+		public override bool UserInteractionEnabled
+		{
+			get
+			{
+				return base.UserInteractionEnabled;
+			}
+			set
+			{
+				base.UserInteractionEnabled = value;
+				titleLabel.UserInteractionEnabled = value;
+				descriptionLabel.UserInteractionEnabled = value;
+			}
+		}
+
+		public override String Description
 		{
 			get
 			{
@@ -384,7 +509,7 @@ namespace Ticker.UI
 			Frame = new RectangleF(Frame.X,Frame.Y,bestSize_title.Width+kLPScrollingTickerLabelItem_Space+bestSize_subtitle.Width+10,Math.Max(bestSize_title.Height,bestSize_subtitle.Height));
 		}
 
-		protected void LayoutSubviews()
+		public void LayoutSubviews()
 		{
 			base.LayoutSubviews();
 
