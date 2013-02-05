@@ -492,6 +492,15 @@ namespace Ticker.UI
 			}
 		}
 
+		public UIColor TextColor 
+		{
+			set
+			{
+				titleLabel.TextColor = value;
+				descriptionLabel.TextColor = value;
+			}
+		}
+
 		public override String Description
 		{
 			get
