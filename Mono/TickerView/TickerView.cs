@@ -335,7 +335,7 @@ namespace Ticker.UI
 		{
 			get
 			{
-				RectangleF visibleRect;
+				RectangleF visibleRect = new RectangleF();
 				// it returns the correct value while the scrollview is animating (simple scrollView.contentOffset will return a wrong value)
 				visibleRect.Location = scrollView.Layer.PresentationLayer.Bounds.Location;					
 				visibleRect.Size = scrollView.Frame.Size;
