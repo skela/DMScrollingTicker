@@ -102,6 +102,7 @@
     <InterfaceDefinition Include="MainViewController_iPad.xib" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.MonoTouch.CSharp.targets" />
   <ItemGroup>
     <ProjectReference Include="..\..\TickerView\TickerView.csproj">
       <Project>{0C091988-2851-4456-A837-B5AD19EDE7C0}</Project>
