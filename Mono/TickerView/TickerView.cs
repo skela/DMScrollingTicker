@@ -1,11 +1,11 @@
 using System;
-using System.Drawing;
+using CoreGraphics;
 using System.Collections.Generic;
 
-using MonoTouch.UIKit;
-using MonoTouch.Foundation;
-using MonoTouch.CoreAnimation;
-using MonoTouch.ObjCRuntime;
+using UIKit;
+using Foundation;
+using CoreAnimation;
+using ObjCRuntime;
 
 namespace Ticker.UI
 {
@@ -42,7 +42,7 @@ namespace Ticker.UI
 		float kLPScrollingTickerHSpace = 2.0f;
 		float kLPScrollingAnimationPixelsPerSecond = 50.0f; // Default animation speed
 
-		public TickerView (RectangleF frame) : base(frame)
+		public TickerView (CGRect frame) : base(frame)
 		{
 			scrollViewDirection = ScrollDirection.FromRight;
 			numberOfLoops=0;
@@ -161,13 +161,13 @@ namespace Ticker.UI
 
 		UITapGestureRecognizer tapRecognizer;
 
-		RectangleF tempFrame;
+		CGRect tempFrame;
 		public void TappedTickerView(UITapGestureRecognizer recog)
 		{
 			if (tapHandler==null)
 				return;
 
-			PointF point = recog.LocationInView(this);
+			CGPoint point = recog.LocationInView(this);
 			point.X = point.X + VisibleContentRect.X;
 			UIView tappedView = null;
 			Console.WriteLine("point is " + point.ToString());
@@ -238,15 +238,15 @@ namespace Ticker.UI
 
 		#region Internal
 
-		PointF StartOffset 
+		CGPoint StartOffset 
 		{
 			get
 			{
-				PointF startOffset = new PointF();
+				CGPoint startOffset = new CGPoint();
 				if (scrollViewDirection == ScrollDirection.FromRight)
-					startOffset = new PointF(-scrollView.Frame.Size.Width, 0);
+					startOffset = new CGPoint(-scrollView.Frame.Size.Width, 0);
 				else if (scrollViewDirection == ScrollDirection.FromLeft)
-					startOffset = new PointF(scrollView.ContentSize.Width, 0);
+					startOffset = new CGPoint(scrollView.ContentSize.Width, 0);
 				return startOffset;
 			}
 		}
@@ -264,12 +264,12 @@ namespace Ticker.UI
 			UIView.AnimateNotify(animationDuration,0.0f,UIViewAnimationOptions.CurveLinear|UIViewAnimationOptions.AllowUserInteraction,
 			delegate
 			{
-				PointF finalPoint = new PointF();
+				CGPoint finalPoint = new CGPoint();
 				
 				if (scrollViewDirection == ScrollDirection.FromRight)
-					finalPoint = new PointF(scrollView.ContentSize.Width, 0);
+					finalPoint = new CGPoint(scrollView.ContentSize.Width, 0);
 				else if (scrollViewDirection == ScrollDirection.FromLeft)
-					finalPoint = new PointF(-scrollView.ContentSize.Width+scrollView.Frame.Size.Width, 0);
+					finalPoint = new CGPoint(-scrollView.ContentSize.Width+scrollView.Frame.Size.Width, 0);
 				
 				scrollView.ContentOffset = finalPoint;
 			},
@@ -303,7 +303,7 @@ namespace Ticker.UI
 			ScrollToStart(animated);
 		}
 
-		private void ScrollToOffset(PointF offsetPoint,bool animated)
+		private void ScrollToOffset(CGPoint offsetPoint,bool animated)
 		{
 			EndAnimation(false);
 			scrollView.SetContentOffset(offsetPoint,animated);
@@ -319,7 +319,7 @@ namespace Ticker.UI
 
 		#region Layout
 
-		SizeF ContentSize 
+		CGSize ContentSize 
 		{
 			get
 			{
@@ -331,11 +331,11 @@ namespace Ticker.UI
 			}
 		}
 
-		RectangleF VisibleContentRect 
+		CGRect VisibleContentRect 
 		{
 			get
 			{
-				RectangleF visibleRect = new RectangleF();
+				CGRect visibleRect = new CGRect();
 				// it returns the correct value while the scrollview is animating (simple scrollView.contentOffset will return a wrong value)
 				visibleRect.Location = scrollView.Layer.PresentationLayer.Bounds.Location;					
 				visibleRect.Size = scrollView.Frame.Size;
@@ -348,18 +348,18 @@ namespace Ticker.UI
 			tickerSubViews = new List<NSObject>();
 			tickerSubviewsFrames = new List<NSValue>();
 			
-			SizeF scrollingContentSize = new SizeF();
-			
+			CGSize scrollingContentSize = new CGSize();
+
 			float offsetX = 0.0f;
 			foreach (NSValue itemSize in frameSizes) 
 			{
-				RectangleF itemFrame = new RectangleF(offsetX,0,itemSize.SizeFValue.Width,itemSize.SizeFValue.Height);
-				tickerSubviewsFrames.Add(NSValue.FromRectangleF(itemFrame));
+				CGRect itemFrame = new CGRect(offsetX,0,itemSize.SizeFValue.Width,itemSize.SizeFValue.Height);
+				tickerSubviewsFrames.Add(NSValue.FromCGRect(itemFrame));
 				tickerSubViews.Add(NSNull.Null);
 
 				float itemWidth = (itemSize.SizeFValue.Width+kLPScrollingTickerHSpace);
 				scrollingContentSize.Width +=+itemWidth;
-				scrollingContentSize.Height = Math.Max(scrollingContentSize.Height,itemSize.SizeFValue.Height);
+				scrollingContentSize.Height = (nfloat)Math.Max(scrollingContentSize.Height,itemSize.SizeFValue.Height);
 				
 				offsetX += itemWidth;
 			}
@@ -371,18 +371,18 @@ namespace Ticker.UI
 			tickerSubViews = null;
 			tickerSubviewsFrames = new List<NSValue>();
 			
-			SizeF scrollingContentSize = new SizeF();    
-			float offsetX = 0.0f;
+			CGSize scrollingContentSize = new CGSize();    
+			nfloat offsetX = 0.0f;
 			foreach (UIView itemView in itemsToLoad) 
 			{
 				itemView.LayoutSubviews();
-				RectangleF itemFrame = new RectangleF(offsetX,0,itemView.Frame.Size.Width,itemView.Frame.Size.Height);
-				tickerSubviewsFrames.Add(NSValue.FromRectangleF(itemFrame));
+				CGRect itemFrame = new CGRect(offsetX,0,itemView.Frame.Size.Width,itemView.Frame.Size.Height);
+				tickerSubviewsFrames.Add(NSValue.FromCGRect(itemFrame));
 
 				// calculate content size
-				float itemWidth = (itemView.Frame.Size.Width+kLPScrollingTickerHSpace);
+				var itemWidth = (itemView.Frame.Size.Width+kLPScrollingTickerHSpace);
 				scrollingContentSize.Width +=+itemWidth;
-				scrollingContentSize.Height = Math.Max(scrollingContentSize.Height,itemView.Frame.Size.Height);
+				scrollingContentSize.Height = (nfloat)Math.Max(scrollingContentSize.Height,itemView.Frame.Size.Height);
 				offsetX += itemWidth;
 				
 				itemView.Frame = itemFrame;
@@ -402,7 +402,7 @@ namespace Ticker.UI
 			// remove the unused/not visible subviews.
 			// This is not called when data loading mode = LPScrollingTickerDataLoading_PreloadSubviews
 			uint k = 0;
-			RectangleF visibleRect = VisibleContentRect;
+			CGRect visibleRect = VisibleContentRect;
 			foreach (NSValue itemFrame in tickerSubviewsFrames) 
 			{
 				bool isVisible = visibleRect.IntersectsWith(itemFrame.RectangleFValue);
@@ -453,14 +453,14 @@ namespace Ticker.UI
 
 		private float kLPScrollingTickerLabelItem_Space = 5.0f;
 
-		public TickerLabel(String title,String description,float height) : base(new RectangleF(0,0,0,height))
+		public TickerLabel(String title,String description,float height) : base(new CGRect(0,0,0,height))
 		{		
-			titleLabel = new UILabel(new RectangleF());				
+			titleLabel = new UILabel(new CGRect());				
 			titleLabel.Font = UIFont.BoldSystemFontOfSize(14.0f);
 			titleLabel.LineBreakMode = UILineBreakMode.WordWrap;
 			titleLabel.Lines = 1;
 			
-			descriptionLabel =  new UILabel(new RectangleF());	
+			descriptionLabel =  new UILabel(new CGRect());	
 			descriptionLabel.Font = UIFont.SystemFontOfSize(14.0f);
 			descriptionLabel.LineBreakMode = UILineBreakMode.WordWrap;
 			descriptionLabel.Lines = 1;
@@ -511,11 +511,11 @@ namespace Ticker.UI
 
 		public void LayoutSubviewsNow()
 		{
-			SizeF bestSize_title = titleLabel.StringSize(titleLabel.Text,titleLabel.Font,new SizeF(float.MaxValue,Frame.Size.Height),UILineBreakMode.WordWrap);
-			SizeF bestSize_subtitle = descriptionLabel.StringSize(descriptionLabel.Text,descriptionLabel.Font,new SizeF(float.MaxValue,Frame.Size.Height),UILineBreakMode.WordWrap);
-			titleLabel.Frame = new RectangleF(5.0f,0.0f,bestSize_title.Width,Frame.Size.Height);				
-			descriptionLabel.Frame = new RectangleF(titleLabel.Frame.X+titleLabel.Frame.Size.Width+kLPScrollingTickerLabelItem_Space,0,bestSize_subtitle.Width,Frame.Size.Height);
-			Frame = new RectangleF(Frame.X,Frame.Y,bestSize_title.Width+kLPScrollingTickerLabelItem_Space+bestSize_subtitle.Width+10,Math.Max(bestSize_title.Height,bestSize_subtitle.Height));
+			CGSize bestSize_title = titleLabel.Text.StringSize(titleLabel.Font,new CGSize(nfloat.MaxValue,Frame.Size.Height),UILineBreakMode.WordWrap);
+			CGSize bestSize_subtitle = descriptionLabel.Text.StringSize(descriptionLabel.Font,new CGSize(nfloat.MaxValue,Frame.Size.Height),UILineBreakMode.WordWrap);
+			titleLabel.Frame = new CGRect(5.0f,0.0f,bestSize_title.Width,Frame.Size.Height);				
+			descriptionLabel.Frame = new CGRect(titleLabel.Frame.X+titleLabel.Frame.Size.Width+kLPScrollingTickerLabelItem_Space,0,bestSize_subtitle.Width,Frame.Size.Height);
+			Frame = new CGRect(Frame.X,Frame.Y,bestSize_title.Width+kLPScrollingTickerLabelItem_Space+bestSize_subtitle.Width+10,(nfloat)Math.Max(bestSize_title.Height,bestSize_subtitle.Height));
 		}
 
 		public void LayoutSubviews()

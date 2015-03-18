@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Drawing;
+using CoreGraphics;
 
-using MonoTouch.Foundation;
-using MonoTouch.UIKit;
+using Foundation;
+using UIKit;
 
 using Ticker.UI;
 
@@ -15,7 +15,7 @@ namespace TickerViewTest
 			get { return UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Phone; }
 		}
 
-		UIPopoverController flipsidePopoverController;
+		//UIPopoverController flipsidePopoverController;
 		
 		public MainViewController ()
 			: base (UserInterfaceIdiomIsPhone ? "MainViewController_iPhone" : "MainViewController_iPad" , null)
@@ -38,8 +38,8 @@ namespace TickerViewTest
 
 		public void LoadButtons()
 		{
-			pauseButton = new UIButton(UIButtonType.RoundedRect); pauseButton.Frame = new RectangleF(78,291,180,40); pauseButton.SetTitle("Pause",UIControlState.Normal);
-			resumeButton = new UIButton(UIButtonType.RoundedRect); resumeButton.Frame = new RectangleF(78,346,180,40); resumeButton.SetTitle("Resume",UIControlState.Normal);
+			pauseButton = new UIButton(UIButtonType.RoundedRect); pauseButton.Frame = new CGRect(78,291,180,40); pauseButton.SetTitle("Pause",UIControlState.Normal);
+			resumeButton = new UIButton(UIButtonType.RoundedRect); resumeButton.Frame = new CGRect(78,346,180,40); resumeButton.SetTitle("Resume",UIControlState.Normal);
 
 			pauseButton.AddTarget(ClickedPause,UIControlEvent.TouchUpInside);
 			resumeButton.AddTarget(ClickedResume,UIControlEvent.TouchUpInside);
@@ -51,17 +51,17 @@ namespace TickerViewTest
 		TickerView tickerView;
 		public void LoadPicker()
 		{
-			tickerView = new TickerView(new RectangleF(0,170,320,18));				
+			tickerView = new TickerView(new CGRect(0,170,320,18));				
 			tickerView.BackgroundColor = UIColor.Yellow;
 			View.AddSubview(tickerView);
 			
 			List<UIView> l = new List<UIView>();
-			List<NSValue> sizes = new List <NSValue>();
+			//List<NSValue> sizes = new List <NSValue>();
 			
 			for (uint k = 0; k < 5; k++) 
 			{
 				TickerLabel label = new TickerLabel(String.Format("> Title {0}",k),String.Format("Description {0}",k),18);
-				sizes.Add(NSValue.FromSizeF(label.Frame.Size));
+				//sizes.Add(NSValue.FromSizeF(label.Frame.Size));
 				l.Add(label);
 			}
 			
